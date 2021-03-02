@@ -47,8 +47,11 @@ import com.instructure.student.interfaces.AdapterToAssignmentsCallback
 import com.instructure.student.mobius.assignmentDetails.ui.AssignmentDetailsFragment
 import com.instructure.student.router.RouteMatcher
 import com.instructure.student.util.StudentPrefs
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.assignment_list_layout.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 @PageView(url = "{canvasContext}/assignments")
 class AssignmentListFragment : ParentFragment(), Bookmarkable {
 
@@ -57,13 +60,16 @@ class AssignmentListFragment : ParentFragment(), Bookmarkable {
     private lateinit var recyclerAdapter: AssignmentListRecyclerAdapter
     private var termAdapter: TermSpinnerAdapter? = null
 
+    @Inject
+    lateinit var studentPrefs: StudentPrefs
+
     private var sortOrder: AssignmentsSortOrder
         get() {
-            val preferenceKey = StudentPrefs.getString("sortBy_${canvasContext.contextId}", AssignmentsSortOrder.SORT_BY_TIME.preferenceKey)
+            val preferenceKey = studentPrefs.getString("sortBy_${canvasContext.contextId}", AssignmentsSortOrder.SORT_BY_TIME.preferenceKey)
             return AssignmentsSortOrder.fromPreferenceKey(preferenceKey)
         }
         set(value) {
-            StudentPrefs.putString("sortBy_${canvasContext.contextId}", value.preferenceKey)
+            studentPrefs.putString("sortBy_${canvasContext.contextId}", value.preferenceKey)
         }
 
     private val allTermsGradingPeriod by lazy {
@@ -102,6 +108,11 @@ class AssignmentListFragment : ParentFragment(), Bookmarkable {
     override fun title(): String = getString(R.string.assignments)
 
     override fun getSelectedParamName() = RouterParams.ASSIGNMENT_ID
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.assignment_list_layout, container, false)

@@ -28,6 +28,8 @@ buildscript {
         maven { url "https://dl.bintray.com/instructure/maven" }
     }
 
+    ext.hilt_version = '2.33-beta'
+
     dependencies {
         classpath Plugins.ANDROID_GRADLE_TOOLS
         classpath Plugins.APOLLO
@@ -37,6 +39,8 @@ buildscript {
         classpath Plugins.BUILD_SCAN
         if (project.coverageEnabled) { classpath Plugins.JACOCO_ANDROID }
         classpath Plugins.SQLDELIGHT
+
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
     }
 }
 

@@ -50,7 +50,7 @@ abstract class MobiusFragment<MODEL, EVENT, EFFECT, VIEW : MobiusView<VIEW_STATE
 
     lateinit var controller: MobiusLoop.Controller<MODEL, EVENT>
 
-    protected lateinit var view: VIEW
+    private lateinit var view: VIEW
 
     fun getMobiusView(): VIEW = view
 

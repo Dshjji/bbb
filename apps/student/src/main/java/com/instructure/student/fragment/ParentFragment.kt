@@ -179,7 +179,7 @@ abstract class ParentFragment : DialogFragment(), FragmentInteractions {
     }
 
     override fun onAttach(context: Context) {
-        super.onAttach(requireContext())
+        super.onAttach(context)
         setHasOptionsMenu(true)
     }
 

@@ -27,15 +27,24 @@ import com.instructure.pandautils.utils.makeBundle
 import com.instructure.pandautils.utils.withArgs
 import com.instructure.student.mobius.common.ui.MobiusFragment
 import com.instructure.student.mobius.syllabus.*
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 @PageView(url = "{canvasContext}/assignments/syllabus")
 class SyllabusFragment : MobiusFragment<SyllabusModel, SyllabusEvent, SyllabusEffect, SyllabusView, SyllabusViewState>() {
 
     val canvasContext by ParcelableArg<Course>(key = Const.CANVAS_CONTEXT)
 
-    override fun makeEffectHandler() = SyllabusEffectHandler()
+    @Inject
+    lateinit var syllabusEffectHandler: SyllabusEffectHandler
 
-    override fun makeUpdate() = SyllabusUpdate()
+    @Inject
+    lateinit var syllabusUpdate: SyllabusUpdate
+
+    override fun makeEffectHandler() = syllabusEffectHandler
+
+    override fun makeUpdate() = syllabusUpdate
 
     override fun makeView(inflater: LayoutInflater, parent: ViewGroup) = SyllabusView(canvasContext, inflater, parent)
 

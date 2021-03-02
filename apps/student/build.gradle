@@ -24,6 +24,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.firebase.crashlytics'
 apply from: '../../gradle/coverage.gradle'
 apply plugin: 'com.squareup.sqldelight'
+apply plugin: 'dagger.hilt.android.plugin'
 
 def coverageEnabled = project.hasProperty('coverage')
 
@@ -307,6 +308,9 @@ dependencies {
     implementation(Libs.JOURNEY_ZXING) { transitive = false }
     implementation Libs.ZXING
     implementation "com.google.firebase:firebase-crashlytics-ndk:17.2.1"
+
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 }
 
 // Comment out this line if the reporting logic starts going wonky.
