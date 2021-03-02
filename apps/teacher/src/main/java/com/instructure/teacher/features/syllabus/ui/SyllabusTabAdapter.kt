@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.fragment_syllabus_webview.view.*
 private const val TAB_COUNT = 2
 private const val SYLLABUS_TAB_POSITION = 0
 
-class SyllabusTabAdapter(private val canvasContext: CanvasContext, private val titles: List<String>) : PagerAdapter() {
+class SyllabusTabAdapter(private val canvasContext: CanvasContext, private val titles: List<String>, private val activity: FragmentActivity) : PagerAdapter() {
 
     override fun isViewFromObject(view: View, any: Any) = view === any
 
@@ -58,8 +58,7 @@ class SyllabusTabAdapter(private val canvasContext: CanvasContext, private val t
     private fun isSyllabusPosition(position: Int) = position == SYLLABUS_TAB_POSITION
 
     private fun setupWebView(webView: CanvasWebView) {
-        val activity = (webView.context as? FragmentActivity)
-        activity?.let { webView.addVideoClient(it) }
+        webView.addVideoClient(activity)
         webView.canvasWebViewClientCallback = object : CanvasWebView.CanvasWebViewClientCallback {
             override fun openMediaFromWebView(mime: String, url: String, filename: String) {
                 RouteMatcher.openMedia(activity, url)

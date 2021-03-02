@@ -19,6 +19,7 @@ package com.instructure.teacher.features.syllabus.ui
 import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import com.google.android.material.tabs.TabLayout
 import com.instructure.canvasapi2.models.Assignment
 import com.instructure.canvasapi2.models.CanvasContext
@@ -69,15 +70,16 @@ class SyllabusView(val canvasContext: CanvasContext, inflater: LayoutInflater, p
     init {
         toolbar.setupMenu(R.menu.menu_edit_generic) { consumer?.accept(SyllabusEvent.EditClicked) }
         setEditVisibility(false)
-        ViewStyler.themeToolbar(context as Activity, toolbar, canvasContext)
+        val activity = context as FragmentActivity
+        ViewStyler.themeToolbar(activity, toolbar, canvasContext)
 
         syllabusTabLayout.setBackgroundColor(ColorKeeper.getOrGenerateColor(canvasContext))
 
-        toolbar.setupAsBackButton { (context as? Activity)?.onBackPressed() }
+        toolbar.setupAsBackButton { activity.onBackPressed() }
         toolbar.title = context.getString(com.instructure.pandares.R.string.syllabus)
         toolbar.subtitle = canvasContext.name
 
-        syllabusPager.adapter = SyllabusTabAdapter(canvasContext, getTabTitles())
+        syllabusPager.adapter = SyllabusTabAdapter(canvasContext, getTabTitles(), activity)
         syllabusTabLayout.setupWithViewPager(syllabusPager, true)
     }
 
