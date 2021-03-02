@@ -42,6 +42,7 @@ import com.instructure.pandautils.utils.isCourseOrGroup
 import com.instructure.teacher.R
 import com.instructure.teacher.events.AssignmentDescriptionEvent
 import com.instructure.teacher.router.RouteResolver
+import dagger.hilt.android.AndroidEntryPoint
 import instructure.rceditor.RCEConst.HTML_RESULT
 import instructure.rceditor.RCEFragment
 import kotlinx.android.synthetic.main.activity_fullscreen.*
@@ -49,6 +50,7 @@ import kotlinx.coroutines.Job
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Response
 
+@AndroidEntryPoint
 class FullscreenActivity : BaseAppCompatActivity(), RCEFragment.RCEFragmentCallbacks, FullScreenInteractions {
 
     private var mRoute: Route? = null

@@ -43,7 +43,7 @@ abstract class MobiusFragment<MODEL, EVENT, EFFECT, VIEW : MobiusView<VIEW_STATE
 
     lateinit var controller: MobiusLoop.Controller<MODEL, EVENT>
 
-    lateinit var view: VIEW
+    lateinit var mobiusView: VIEW
 
     private lateinit var effectHandler: EffectHandler<VIEW, EVENT, EFFECT>
 
@@ -78,23 +78,23 @@ abstract class MobiusFragment<MODEL, EVENT, EFFECT, VIEW : MobiusView<VIEW_STATE
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        view = makeView(inflater, container!!)
-        effectHandler.view = view
+        mobiusView = makeView(inflater, container!!)
+        effectHandler.view = mobiusView
         val presenter = makePresenter()
-        controller.connect(view.contraMap(presenter::present, requireContext(), overrideInitViewState != null))
+        controller.connect(mobiusView.contraMap(presenter::present, requireContext(), overrideInitViewState != null))
         if (overrideInitViewState != null) {
-            view.connection?.accept(overrideInitViewState!!)
+            mobiusView.connection?.accept(overrideInitViewState!!)
             overrideInitViewState = null
         } else if (update.initialized) {
-            view.connection?.accept(presenter.present(controller.model, requireContext()))
+            mobiusView.connection?.accept(presenter.present(controller.model, requireContext()))
         }
-        return view.containerView
+        return mobiusView.containerView
     }
 
     override fun onStart() {
         super.onStart()
         controller.start()
-        effectHandler.view = view
+        effectHandler.view = mobiusView
     }
 
     override fun onStop() {

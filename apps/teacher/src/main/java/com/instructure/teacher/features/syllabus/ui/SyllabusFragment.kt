@@ -25,12 +25,18 @@ import com.instructure.pandautils.utils.ParcelableArg
 import com.instructure.pandautils.utils.withArgs
 import com.instructure.teacher.features.syllabus.*
 import com.instructure.teacher.mobius.common.ui.MobiusFragment
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SyllabusFragment : MobiusFragment<SyllabusModel, SyllabusEvent, SyllabusEffect, SyllabusView, SyllabusViewState>() {
 
     val canvasContext by ParcelableArg<Course>(key = Const.CANVAS_CONTEXT)
 
-    override fun makeEffectHandler() = SyllabusEffectHandler()
+    @Inject
+    lateinit var syllabusEffectHandler: SyllabusEffectHandler
+
+    override fun makeEffectHandler() = syllabusEffectHandler
 
     override fun makeUpdate() = SyllabusUpdate()
 
@@ -42,11 +48,11 @@ class SyllabusFragment : MobiusFragment<SyllabusModel, SyllabusEvent, SyllabusEf
 
     override fun onStart() {
         super.onStart()
-        view.registerEventBus()
+        mobiusView.registerEventBus()
     }
 
     override fun onStop() {
-        view.unregisterEventBus()
+        mobiusView.unregisterEventBus()
         super.onStop()
     }
 

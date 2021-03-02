@@ -27,7 +27,7 @@ import com.instructure.teacher.features.syllabus.ui.SyllabusView
 import com.instructure.teacher.mobius.common.ui.EffectHandler
 import kotlinx.coroutines.launch
 
-class SyllabusEffectHandler : EffectHandler<SyllabusView, SyllabusEvent, SyllabusEffect>() {
+class SyllabusEffectHandler(private val courseManager: CourseManager, private val calendarEventManager: CalendarEventManager) : EffectHandler<SyllabusView, SyllabusEvent, SyllabusEffect>() {
 
     override fun accept(effect: SyllabusEffect) {
         when (effect) {
@@ -40,12 +40,12 @@ class SyllabusEffectHandler : EffectHandler<SyllabusView, SyllabusEvent, Syllabu
 
     private fun loadData(effect: SyllabusEffect.LoadData) {
         launch {
-            val summaryAllowed = CourseManager
+            val summaryAllowed = courseManager
                     .getCourseSettingsAsync(effect.courseId, effect.forceNetwork)
                     .await()
                     .dataOrNull?.courseSummary == true
 
-            val course = CourseManager.getCourseWithSyllabusAsync(effect.courseId, effect.forceNetwork).await()
+            val course = courseManager.getCourseWithSyllabusAsync(effect.courseId, effect.forceNetwork).await()
 
             val summaryResult: DataResult<List<ScheduleItem>>
             if (course.isFail) {
@@ -59,8 +59,8 @@ class SyllabusEffectHandler : EffectHandler<SyllabusView, SyllabusEvent, Syllabu
             } else {
                 val contextCodes = listOf(course.dataOrThrow.contextId)
 
-                val assignmentsDeferred = CalendarEventManager.getCalendarEventsExhaustiveAsync(true, CalendarEventAPI.CalendarEventType.ASSIGNMENT, null, null, contextCodes, effect.forceNetwork)
-                val calendarEventsDeferred = CalendarEventManager.getCalendarEventsExhaustiveAsync(true, CalendarEventAPI.CalendarEventType.CALENDAR, null, null, contextCodes, effect.forceNetwork)
+                val assignmentsDeferred = calendarEventManager.getCalendarEventsExhaustiveAsync(true, CalendarEventAPI.CalendarEventType.ASSIGNMENT, null, null, contextCodes, effect.forceNetwork)
+                val calendarEventsDeferred = calendarEventManager.getCalendarEventsExhaustiveAsync(true, CalendarEventAPI.CalendarEventType.CALENDAR, null, null, contextCodes, effect.forceNetwork)
 
                 val assignmentsResult = assignmentsDeferred.await()
                 val eventsResult = calendarEventsDeferred.await()
@@ -72,7 +72,7 @@ class SyllabusEffectHandler : EffectHandler<SyllabusView, SyllabusEvent, Syllabu
                 }
             }
 
-            val permissionsDeferred = CourseManager.getPermissionsAsync(course.dataOrThrow.id, listOf(CanvasContextPermission.MANAGE_CONTENT))
+            val permissionsDeferred = courseManager.getPermissionsAsync(course.dataOrThrow.id, listOf(CanvasContextPermission.MANAGE_CONTENT))
             val permissionsResult = permissionsDeferred.await()
 
             consumer.accept(SyllabusEvent.DataLoaded(course, summaryResult, permissionsResult, summaryAllowed))

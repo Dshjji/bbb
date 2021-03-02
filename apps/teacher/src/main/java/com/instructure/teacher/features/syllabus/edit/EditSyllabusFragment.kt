@@ -55,17 +55,17 @@ class EditSyllabusFragment : MobiusFragment<EditSyllabusModel, EditSyllabusEvent
                 RequestCodes.CAMERA_PIC_REQUEST -> MediaUploadUtils.handleCameraPicResult(requireActivity(), null)
                 else -> null
             }?.let { imageUri ->
-                view.uploadRceImage(imageUri, requireActivity(), course)
+                mobiusView.uploadRceImage(imageUri, requireActivity(), course)
             }
         }
     }
 
-    override fun onHandleBackPressed() = view.onHandleBackPressed()
+    override fun onHandleBackPressed() = mobiusView.onHandleBackPressed()
 
     override fun onHandleClose() = false
 
     override fun onPause() {
-        view.saveState()
+        mobiusView.saveState()
         super.onPause()
     }
 

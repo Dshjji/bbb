@@ -35,10 +35,16 @@ import com.instructure.canvasapi2.models.CanvasContext
 import com.instructure.canvasapi2.models.ToDo
 import com.instructure.canvasapi2.utils.*
 import com.instructure.pandautils.utils.ColorKeeper
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.Serializable
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class TodoViewWidgetService : BaseRemoteViewsService(), Serializable {
+
+    @Inject
+    lateinit var calendarEventManager: CalendarEventManager
 
     override fun onGetViewFactory(intent: Intent): RemoteViewsService.RemoteViewsFactory {
         return TodoViewsFactory(intent)
@@ -160,7 +166,7 @@ class TodoViewWidgetService : BaseRemoteViewsService(), Serializable {
                             .filter { it.isFavorite && !it.accessRestrictedByDate && !it.isInvited() }
                     val groups = GroupManager.getFavoriteGroupsSynchronous(true)
                     val todos = ToDoManager.getTodosSynchronous(ApiPrefs.user!!, true)
-                    val events = CalendarEventManager.getUpcomingEventsSynchronous(true)
+                    val events = calendarEventManager.getUpcomingEventsSynchronous(true)
 
                     val courseMap = CourseManager.createCourseMap(courses)
                     val groupMap = GroupManager.createGroupMap(groups)

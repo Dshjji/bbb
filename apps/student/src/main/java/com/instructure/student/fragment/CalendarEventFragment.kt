@@ -39,6 +39,7 @@ import com.instructure.pandautils.views.CanvasWebView
 import com.instructure.student.R
 import com.instructure.student.flutterChannels.FlutterComm
 import com.instructure.student.router.RouteMatcher
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.calendar_event_layout.*
 import kotlinx.android.synthetic.main.fragment_calendar_event.*
 import kotlinx.coroutines.Job
@@ -48,7 +49,9 @@ import org.greenrobot.eventbus.ThreadMode
 import retrofit2.Response
 import java.net.URLDecoder
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CalendarEventFragment : ParentFragment() {
 
     // Bundle args
@@ -61,6 +64,9 @@ class CalendarEventFragment : ParentFragment() {
 
     private var loadHtmlJob: Job? = null
 
+    @Inject
+    lateinit var calendarEventManager: CalendarEventManager
+
     //region Fragment Lifecycle Overrides
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater?.inflate(R.layout.fragment_calendar_event, container, false)
@@ -69,7 +75,7 @@ class CalendarEventFragment : ParentFragment() {
         super.onActivityCreated(savedInstanceState)
         setUpCallback()
         if (scheduleItem == null) {
-            CalendarEventManager.getCalendarEvent(scheduleItemId, scheduleItemCallback, true)
+            calendarEventManager.getCalendarEvent(scheduleItemId, scheduleItemCallback, true)
         } else {
             initViews()
         }
@@ -281,7 +287,7 @@ class CalendarEventFragment : ParentFragment() {
             .setMessage(getString(R.string.confirmDeleteEvent))
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
-                CalendarEventManager.deleteCalendarEvent(scheduleItem!!.id, "", deleteItemCallback)
+                calendarEventManager.deleteCalendarEvent(scheduleItem!!.id, "", deleteItemCallback)
             }
             .create()
         dialog.setOnShowListener {

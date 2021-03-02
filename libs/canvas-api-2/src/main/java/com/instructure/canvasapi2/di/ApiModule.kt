@@ -1,5 +1,6 @@
-package com.instructure.student.di
+package com.instructure.canvasapi2.di
 
+import com.instructure.canvasapi2.apis.CalendarEventAPI
 import com.instructure.canvasapi2.managers.CalendarEventManager
 import com.instructure.canvasapi2.managers.CourseManager
 import dagger.Module
@@ -17,8 +18,12 @@ object ApiModule {
     }
 
     @Provides
-    fun providesCalendarEventManager(): CalendarEventManager {
-        return CalendarEventManager
+    fun providesCalendarEventManager(calendarEventApi: CalendarEventAPI): CalendarEventManager {
+        return CalendarEventManager(calendarEventApi)
     }
 
+    @Provides
+    fun providesCalendarEventApi(): CalendarEventAPI {
+        return CalendarEventAPI
+    }
 }

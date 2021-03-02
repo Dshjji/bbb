@@ -25,6 +25,7 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 import java.io.IOException
+import kotlin.jvm.Throws
 
 
 object CalendarEventAPI {

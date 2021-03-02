@@ -24,10 +24,11 @@ import com.instructure.canvasapi2.models.ScheduleItem
 import com.instructure.canvasapi2.utils.ExhaustiveListCallback
 import com.instructure.canvasapi2.utils.weave.apiAsync
 import java.io.IOException
+import kotlin.jvm.Throws
 
-object CalendarEventManager {
+class CalendarEventManager(private val calendarEventApi: CalendarEventAPI) {
 
-    fun getCalendarEventsExhaustive(
+    private fun getCalendarEventsExhaustive(
         allEvents: Boolean,
         type: CalendarEventAPI.CalendarEventType,
         startDate: String?,
@@ -41,7 +42,7 @@ object CalendarEventManager {
 
         val depaginatedCallback = object : ExhaustiveListCallback<ScheduleItem>(callback) {
             override fun getNextPage(callback: StatusCallback<List<ScheduleItem>>, nextUrl: String, isCached: Boolean) {
-                CalendarEventAPI.getCalendarEvents(
+                calendarEventApi.getCalendarEvents(
                     allEvents,
                     type,
                     startDate,
@@ -55,7 +56,7 @@ object CalendarEventManager {
         }
 
         adapter.statusCallback = depaginatedCallback
-        CalendarEventAPI.getCalendarEvents(
+        calendarEventApi.getCalendarEvents(
             allEvents,
             type,
             startDate,
@@ -74,14 +75,14 @@ object CalendarEventManager {
         endDate: String?,
         canvasContexts: List<String>,
         forceNetwork: Boolean
-    ) = apiAsync<List<ScheduleItem>> { CalendarEventManager.getCalendarEventsExhaustive(allEvents, type, startDate, endDate, canvasContexts, it, forceNetwork) }
+    ) = apiAsync<List<ScheduleItem>> { getCalendarEventsExhaustive(allEvents, type, startDate, endDate, canvasContexts, it, forceNetwork) }
 
     @Throws(IOException::class)
     fun getUpcomingEventsSynchronous(forceNetwork: Boolean): List<ScheduleItem> {
         val adapter = RestBuilder()
         val params = RestParams(usePerPageQueryParam = true, isForceReadFromNetwork = forceNetwork)
 
-        val response = CalendarEventAPI.getUpcomingEventsSynchronous(adapter, params)
+        val response = calendarEventApi.getUpcomingEventsSynchronous(adapter, params)
 
         return response.body()?.let { if (response.isSuccessful) it else emptyList() } ?: emptyList()
     }
@@ -89,13 +90,13 @@ object CalendarEventManager {
     fun getCalendarEvent(eventId: Long, callback: StatusCallback<ScheduleItem>, forceNetwork: Boolean) {
         val adapter = RestBuilder(callback)
         val params = RestParams(isForceReadFromNetwork = forceNetwork)
-        CalendarEventAPI.getCalendarEvent(eventId, adapter, params, callback)
+        calendarEventApi.getCalendarEvent(eventId, adapter, params, callback)
     }
 
     fun deleteCalendarEvent(eventId: Long, cancelReason: String, callback: StatusCallback<ScheduleItem>) {
         val adapter = RestBuilder(callback)
         val params = RestParams()
-        CalendarEventAPI.deleteCalendarEvent(eventId, cancelReason, adapter, params, callback)
+        calendarEventApi.deleteCalendarEvent(eventId, cancelReason, adapter, params, callback)
     }
 
     fun createCalendarEvent(
@@ -110,7 +111,7 @@ object CalendarEventManager {
         val adapter = RestBuilder(callback)
         val params = RestParams()
 
-        CalendarEventAPI.createCalendarEvent(
+        calendarEventApi.createCalendarEvent(
             contextCode,
             title,
             description,
